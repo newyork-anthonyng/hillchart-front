@@ -1,11 +1,14 @@
 <h1>These are your charts</h1>
 
-<ul>
-  {{#each model as |chart|}}
-    <li>{{chart.title}}: {{chart.progress}}%</li>
-  {{/each}}
-</ul>
+<CreateNewChart @onCreateNewChart={{action "createNewChart"}} />
 
-{{create-new-chart onCreateNewChart=(action "createNewChart")}}
+{{#each model as |chart|}}
+  <Chart
+    @id={{chart.id}}
+    @title={{chart.title}}
+    @progress={{chart.progress}}
+    @onDeleteChart={{action "deleteChart"}}
+  />
+{{/each}}
 
 {{outlet}}

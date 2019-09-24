@@ -6,9 +6,19 @@ export default Controller.extend({
     newRecord.save();
   },
 
+  deleteChart(id) {
+    this.store.findRecord('chart', id, { backgroundReload: false }).then(chart => {
+      chart.destroyRecord();
+    });
+  },
+
   actions: {
     createNewChart(title) {
       this.createNewChart(title);
+    },
+
+    deleteChart(id) {
+      this.deleteChart(id);
     }
   }
 });
