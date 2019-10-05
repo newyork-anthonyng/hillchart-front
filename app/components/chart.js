@@ -26,7 +26,7 @@ export default Component.extend({
   didInsertElement() {
     this.drawBellCurve();
     this.setEventHandler();
-    this.positionButton();
+    this.positionButtonOnInitialRender();
   },
 
   willDestroyElement() {
@@ -34,7 +34,7 @@ export default Component.extend({
     document.removeEventListener('mouseup', this.get('handleDocumentMouseUp'));
   },
 
-  positionButton() {
+  positionButtonOnInitialRender() {
     if (this.get('progress')) {
       const { xPosition, yPosition } = this.getXAndYPositionFromPercent(this.get('progress') / 100);
       this.setButtonPosition(xPosition, yPosition);
