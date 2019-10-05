@@ -37,9 +37,7 @@ export default Component.extend({
   positionButton() {
     if (this.get('progress')) {
       const { xPosition, yPosition } = this.getXAndYPositionFromPercent(this.get('progress') / 100);
-      const { $trackButton } = this;
-      $trackButton.style.left = `${xPosition}px`;
-      $trackButton.style.top = `${yPosition}px`;
+      this.setButtonPosition(xPosition, yPosition);
     }
   },
 
@@ -59,8 +57,7 @@ export default Component.extend({
       }
 
       const { xPosition, yPosition } = this.getXAndYPositionFromPosition(e.clientX);
-      $trackButton.style.left = `${xPosition}px`;
-      $trackButton.style.top = `${yPosition}px`;
+      this.setButtonPosition(xPosition, yPosition);
     }
     this.set('handleDocumentMouseMove', handleDocumentMouseMove);
     document.addEventListener('mousemove', handleDocumentMouseMove);
@@ -89,10 +86,9 @@ export default Component.extend({
         +$trackButton.style.left.substring(0, $trackButton.style.left.length - 2) :
         0.1;
       const { xPosition, yPosition } = this.getXAndYPositionFromPosition(originalX + step);
+      this.setButtonPosition(xPosition, yPosition);
 
       this.onUpdateChart(this.id, this.percent);
-      $trackButton.style.left = `${xPosition}px`;
-      $trackButton.style.top = `${yPosition}px`;
     });
   },
 
@@ -143,6 +139,12 @@ export default Component.extend({
 
   deleteChart() {
     this.onDeleteChart(this.id);
+  },
+
+  setButtonPosition(xPosition, yPosition) {
+    const { $trackButton } = this;
+    $trackButton.style.left = `${xPosition}px`;
+    $trackButton.style.top = `${yPosition}px`;
   },
 
   actions: {
