@@ -7,6 +7,14 @@ export default Controller.extend({
     newRecord.save();
   },
 
+  updateChart(id, percent) {
+    this.store.findRecord('chart', id, { backgroundReload: false }).then(chart => {
+      chart.set('progress', Math.floor(percent * 100));
+      chart.save();
+    });
+
+  },
+
   deleteChart(id) {
     this.store.findRecord('chart', id, { backgroundReload: false }).then(chart => {
       chart.destroyRecord();
@@ -16,6 +24,10 @@ export default Controller.extend({
   actions: {
     createNewChart(title) {
       this.createNewChart(title);
+    },
+
+    updateChart(id, percent) {
+      this.updateChart(id, percent);
     },
 
     deleteChart(id) {

@@ -14,14 +14,25 @@ const X_AXIS_RANGE = 5;
 }
 
 export default Component.extend({
+  onDeleteChart() {},
+  onUpdateChart() {},
+
   init() {
     this._super(...arguments);
     this.set('isDragging', false);
+    this.set('percent', 0);
   },
 
   didInsertElement() {
     this.drawBellCurve();
     this.setEventHandler();
+
+    if (this.get('progress')) {
+      const { xPosition, yPosition } = this.getXAndYPositionFromPercent(this.get('progress') / 100);
+      const { $trackButton } = this;
+      $trackButton.style.left = `${xPosition}px`;
+      $trackButton.style.top = `${yPosition}px`;
+    }
   },
 
   willDestroyElement() {
@@ -32,6 +43,8 @@ export default Component.extend({
   setEventHandler() {
     const $trackContainer = this.get('element').querySelector('.js-track-container');
     const $trackButton = this.get('element').querySelector('.js-track-button');
+    this.set('$trackContainer', $trackContainer);
+    this.set('$trackButton', $trackButton);
 
     $trackButton.addEventListener('mousedown', () => {
         this.set('isDragging', true);
@@ -42,7 +55,7 @@ export default Component.extend({
           return;
       }
 
-      const { xPosition, yPosition } = getXAndYPosition(e.clientX);
+      const { xPosition, yPosition } = this.getXAndYPositionFromPosition(e.clientX);
       $trackButton.style.left = `${xPosition}px`;
       $trackButton.style.top = `${yPosition}px`;
     }
@@ -51,6 +64,7 @@ export default Component.extend({
 
     const handleDocumentMouseUp = () => {
       this.set('isDragging', false);
+      this.onUpdateChart(this.id, this.percent);
     };
     this.set('handleDocumentMouseUp', handleDocumentMouseUp);
     document.addEventListener('mouseup', handleDocumentMouseUp);
@@ -71,24 +85,41 @@ export default Component.extend({
       const originalX = $trackButton.style.left ?
         +$trackButton.style.left.substring(0, $trackButton.style.left.length - 2) :
         0.1;
-      const { xPosition, yPosition } = getXAndYPosition(originalX + step);
+      const { xPosition, yPosition } = this.getXAndYPositionFromPosition(originalX + step);
 
+      this.onUpdateChart(this.id, this.percent);
       $trackButton.style.left = `${xPosition}px`;
       $trackButton.style.top = `${yPosition}px`;
     });
+  },
 
-    function getXAndYPosition(rawXPosition) {
-      const xPosition = Math.max(0, Math.min(rawXPosition, $trackContainer.clientWidth - $trackButton.clientWidth));
-      const xPercentage = xPosition / ($trackContainer.clientWidth - $trackButton.clientWidth);
-      const normalizedX = getNormalizedX(xPercentage);
-      const yPercentage = normalDistribution(normalizedX);
-      const yPosition = $trackContainer.clientHeight - ($trackContainer.clientHeight * yPercentage) - $trackButton.clientHeight;
+  getXAndYPositionFromPosition(rawXPosition) {
+    const { $trackContainer, $trackButton } = this;
+    const xPosition = Math.max(0, Math.min(rawXPosition, $trackContainer.clientWidth - $trackButton.clientWidth));
+    const xPercentage = xPosition / ($trackContainer.clientWidth - $trackButton.clientWidth);
+    this.set('percent', xPercentage);
+    const normalizedX = getNormalizedX(xPercentage);
+    const yPercentage = normalDistribution(normalizedX);
+    const yPosition = $trackContainer.clientHeight - ($trackContainer.clientHeight * yPercentage) - $trackButton.clientHeight;
 
-      return {
-        xPosition,
-        yPosition
-      };
-    }
+    return {
+      xPosition,
+      yPosition
+    };
+  },
+
+  getXAndYPositionFromPercent(percent) {
+    const { $trackContainer, $trackButton } = this;
+    const xPosition = percent * ($trackContainer.clientWidth - $trackButton.clientWidth);
+    this.set('percent', percent);
+    const normalizedX = getNormalizedX(percent);
+    const yPercentage = normalDistribution(normalizedX);
+    const yPosition = $trackContainer.clientHeight - ($trackContainer.clientHeight * yPercentage) - $trackButton.clientHeight;
+
+    return {
+      xPosition,
+      yPosition
+    };
   },
 
   drawBellCurve() {
@@ -106,8 +137,6 @@ export default Component.extend({
 
     ctx.stroke();
   },
-
-  onDeleteChart() {},
 
   deleteChart() {
     this.onDeleteChart(this.id);
