@@ -20,24 +20,27 @@ export default Component.extend({
   init() {
     this._super(...arguments);
     this.set('isDragging', false);
-    this.set('percent', 0);
+    this.set('percent', 0); // from 0 to 1
   },
 
   didInsertElement() {
     this.drawBellCurve();
     this.setEventHandler();
+    this.positionButton();
+  },
 
+  willDestroyElement() {
+    document.removeEventListener('mousemove', this.get('handleDocumentMouseMove'));
+    document.removeEventListener('mouseup', this.get('handleDocumentMouseUp'));
+  },
+
+  positionButton() {
     if (this.get('progress')) {
       const { xPosition, yPosition } = this.getXAndYPositionFromPercent(this.get('progress') / 100);
       const { $trackButton } = this;
       $trackButton.style.left = `${xPosition}px`;
       $trackButton.style.top = `${yPosition}px`;
     }
-  },
-
-  willDestroyElement() {
-    document.removeEventListener('mousemove', this.get('handleDocumentMouseMove'));
-    document.removeEventListener('mouseup', this.get('handleDocumentMouseUp'));
   },
 
   setEventHandler() {
