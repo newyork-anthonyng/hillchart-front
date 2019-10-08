@@ -1,11 +1,18 @@
 <div>
-  <div>{{title}}</div>
+  {{#if isEditingTitle}}
+    <input type="text" value={{readonly editedTitle}} onchange={{action (mut editedTitle) value="target.value"}} />
+    <button onclick={{action "handleSaveButtonClick"}}>Save</button>
+    <button onclick={{action "handleCancelButtonClick"}}>Cancel</button>
+  {{else}}
+    <div>{{title}}</div>
+    <button onclick={{action "handleEditButtonClick"}}>Edit</button>
+  {{/if}}
+
   <div>{{progress}}%</div>
 
   <button onclick={{action "deleteChart"}}>Delete</button>
 </div>
 
-<pre>Percent {{percent}}</pre>
 <div class="track__container js-track-container">
   <canvas height="125" width="500" class="js-canvas"></canvas>
   <div role="button" tabindex="0" class="track__button js-track-button"></div>

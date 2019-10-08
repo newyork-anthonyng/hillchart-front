@@ -7,7 +7,14 @@ export default Controller.extend({
     newRecord.save();
   },
 
-  updateChart(id, percent) {
+  updateChartTitle(id, newTitle) {
+    this.store.findRecord('chart', id, { backgroundReload: false }).then(chart => {
+      chart.set('title', newTitle);
+      chart.save();
+    });
+  },
+
+  updateChartPercent(id, percent) {
     this.store.findRecord('chart', id, { backgroundReload: false }).then(chart => {
       chart.set('progress', Math.floor(percent * 100));
       chart.save();
@@ -26,12 +33,16 @@ export default Controller.extend({
       this.createNewChart(title);
     },
 
-    updateChart(id, percent) {
-      this.updateChart(id, percent);
+    updateChartPercent(id, percent) {
+      this.updateChartPercent(id, percent);
     },
 
     deleteChart(id) {
       this.deleteChart(id);
+    },
+
+    updateChartTitle(id, title) {
+      this.updateChartTitle(id, title);
     }
   }
 });
