@@ -15,12 +15,15 @@ const X_AXIS_RANGE = 5;
 
 export default Component.extend({
   onDeleteChart() {},
-  onUpdateChart() {},
+  onPercentUpdate() {},
+  onTitleUpdate() {},
 
   init() {
     this._super(...arguments);
     this.set('isDragging', false);
     this.set('percent', 0); // from 0 to 1
+    this.set('isEditingTitle', false);
+    this.set('editedTitle', this.title);
   },
 
   didInsertElement() {
@@ -90,7 +93,7 @@ export default Component.extend({
       const { xPosition, yPosition } = this.getXAndYPositionFromPosition(originalX + step);
       this.setButtonPosition(xPosition, yPosition);
 
-      this.onUpdateChart(this.id, this.percent);
+      this.onPercentUpdate(this.id, this.percent);
     });
   },
 
@@ -149,9 +152,35 @@ export default Component.extend({
     $trackButton.style.top = `${yPosition}px`;
   },
 
+  editTitle() {
+    this.set('isEditingTitle', true);
+  },
+
+  saveTitle() {
+    this.onTitleUpdate(this.id, this.get('editedTitle'));
+    this.set('isEditingTitle', false);
+  },
+
+  cancelTitleChange() {
+    this.set('isEditingTitle', false);
+    this.set('editedTitle', this.title);
+  },
+
   actions: {
     deleteChart() {
       this.deleteChart();
+    },
+
+    handleEditButtonClick() {
+      this.editTitle();
+    },
+
+    handleSaveButtonClick() {
+      this.saveTitle();
+    },
+
+    handleCancelButtonClick() {
+      this.cancelTitleChange();
     }
   }
 });
