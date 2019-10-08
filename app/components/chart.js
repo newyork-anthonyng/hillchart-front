@@ -63,8 +63,10 @@ export default Component.extend({
     document.addEventListener('mousemove', handleDocumentMouseMove);
 
     const handleDocumentMouseUp = () => {
-      this.set('isDragging', false);
-      this.onUpdateChart(this.id, this.percent);
+      if (this.get('isDragging')) {
+        this.set('isDragging', false);
+        this.onPercentUpdate(this.id, this.percent);
+      }
     };
     this.set('handleDocumentMouseUp', handleDocumentMouseUp);
     document.addEventListener('mouseup', handleDocumentMouseUp);
